@@ -1,10 +1,10 @@
 import React from "react";
 import SudokuBoard from "./Components/SudokuBoard";
-
+import "./App.css";
 const App = () => {
   return (
     <div>
-      Sudoku Game
+      <h1>Sudoku Game</h1>
       <SudokuBoard />
     </div>
   );

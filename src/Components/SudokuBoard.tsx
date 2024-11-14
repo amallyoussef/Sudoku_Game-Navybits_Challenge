@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./SudokuBoard.css";
 
 const SudokuBoard = () => {
   //Initialize a 9x9 empty grid
@@ -19,7 +20,7 @@ const SudokuBoard = () => {
   return (
     <div className="sudoku-board">
       {board.map((row, rowIndex) => (
-        <div key={rowIndex} className="sudoku_row">
+        <div key={rowIndex} className="sudoku-row">
           {row.map((cell, colIndex) => (
             <input
               key={colIndex}
