@@ -5,6 +5,10 @@
     colNum: number,
     value: string
   ): boolean => {
+
+    // Check that value is between 1-9 and not null
+    if (!/^[1-9]$/.test(value)) {return false}
+    
     // Check the row
     for (let col = 0; col < 9; col++) {
       if (board[rowNum][col] === value && col !== colNum) {
