@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./SudokuBoard.css";
+import isValidInput from "../Validation/SudokuValidation";
 
 const SudokuBoard = () => {
   //Initialize a 9x9 empty grid
@@ -15,6 +16,7 @@ const SudokuBoard = () => {
       newBoard[row][col] = value;
       setBoard(newBoard);
     }
+    isValidInput(board, row, col, value);
   };
 
   return (
