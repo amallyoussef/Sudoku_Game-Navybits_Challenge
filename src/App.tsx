@@ -1,4 +1,3 @@
-import React from "react";
 import SudokuBoard from "./Components/SudokuBoard";
 import "./App.css";
 const App = () => {

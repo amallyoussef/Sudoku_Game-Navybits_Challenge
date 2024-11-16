@@ -1,42 +1,48 @@
-// Validation Function for Sudoku Rules
-  const isValidInput = (
-    board: string[][],
-    rowNum: number,
-    colNum: number,
-    value: string
-  ): boolean => {
+const conflictCheck = (board: string[][]): [number, number][]=>{
+    let conflicts: [number, number][] = [];
 
-    // Check that value is between 1-9 and not null
-    if (!/^[1-9]$/.test(value)) {return false}
-    
-    // Check the row
-    for (let col = 0; col < 9; col++) {
-      if (board[rowNum][col] === value && col !== colNum) {
-        console.log("Row error");
-        return false;
-      }
-    }
-    // Check the column
-    for (let row = 0; row < 9; row++) {
-      if (board[row][colNum] === value && row !== rowNum) {
-        console.log("Column error");
-        return false;
-      }
-    }
-    // Check 3x3 subgrids
-    // Get the starting row and column of the corresponding 3x3 subgrid
-    const startRow = Math.floor(rowNum / 3) * 3;
-    const startCol = Math.floor(colNum / 3) * 3;
-
-    for (let row = startRow; row < startRow + 3; row++) {
-      for (let col = startCol; col < startCol + 3; col++) {
-        if (board[row][col] === value && (row !== rowNum || col !== colNum)) {
-          console.log("Subgrid error");
-          return false;
+    // Helper function to check and add conflicts
+    const addConflict = (row: number, col: number) => {
+    if (!conflicts.some(cell => cell[0] === row && cell[1] === col)) {
+      conflicts.push([row, col]);
         }
-      }
-    }
-    return true;
-  };
+    };
+    
+    // Check rows and columns
+    for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+            const value = board[row][col];
+            if (!/^[1-9]$/.test(value)) continue; // Ignore empty cells
 
- export default isValidInput;
+            // Row check
+            for (let c = 0; c < 9; c++) {
+                if (c !== col && board[row][c] === value) {
+                    addConflict(row, col);
+                    addConflict(row, c);
+                }
+            }
+
+            // Column check
+            for (let r = 0; r < 9; r++) {
+                if (r !== row && board[r][col] === value) {
+                    addConflict(row, col);
+                    addConflict(r, col);
+                }
+            }
+
+            // 3x3 subgrid check
+            const startRow = Math.floor(row / 3) * 3;
+            const startCol = Math.floor(col / 3) * 3;
+            for (let r = startRow; r < startRow + 3; r++) {
+                for (let c = startCol; c < startCol + 3; c++) {
+                if ((r !== row || c !== col) && board[r][c] === value) {
+                    addConflict(row, col);
+                    addConflict(r, c);
+                }
+            }
+        }
+    }
+    }
+    return conflicts;
+}
+export default conflictCheck;
