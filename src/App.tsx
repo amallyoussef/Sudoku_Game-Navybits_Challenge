@@ -1,5 +1,6 @@
 import SudokuBoard from "./Components/SudokuBoard";
 import "./App.css";
+
 const App = () => {
   return (
     <div>

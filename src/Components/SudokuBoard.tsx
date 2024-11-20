@@ -1,12 +1,19 @@
 import { Fragment, useState } from "react";
 import "./SudokuBoard.css";
-import conflictCheck from "../Validation/SudokuValidation";
+import conflictCheck from "../Functions/SudokuValidation";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js"; // This is required for dropdown functionality
+import getRandomInt from "../Functions/GenRandom";
 
 const SudokuBoard = () => {
-  //Initialize a 9x9 empty grid
-  const [board, setBoard] = useState<string[][]>(
-    Array.from({ length: 9 }, () => Array(9).fill(""))
-  );
+  // Function to initialize an empty 9x9 grid
+  const initializeEmptyBoard = () =>
+    Array.from({ length: 9 }, () => Array(9).fill(""));
+
+  // State to hold the board
+  const [board, setBoard] = useState<string[][]>(initializeEmptyBoard());
+
+  // State to hold conflicts
   const [conflictCells, setConflictCells] = useState<[number, number][]>([]);
 
   //Handler Function for Input Change
@@ -16,35 +23,126 @@ const SudokuBoard = () => {
       newBoard[row][col] = value;
       setBoard(newBoard);
       setConflictCells(conflictCheck(newBoard));
-      console.log(conflictCells);
     }
   };
 
-  return (
-    <div className="sudoku-board">
-      {board.map((row, rowIndex) => (
-        <div key={rowIndex} className="sudoku-row">
-          {row.map((cell, colIndex) => (
-            <input
-              key={colIndex}
-              type="text"
-              className={`sudoku-cell ${
-                conflictCells.some(
-                  (cell) => cell[0] === rowIndex && cell[1] === colIndex
-                )
-                  ? "conflict"
-                  : ""
-              }`}
-              maxLength={1}
-              value={cell}
-              onChange={(num) =>
-                handleInputChange(rowIndex, colIndex, num.target.value)
+  // Function to generate a solved Sudoku grid
+  const fillBoard = (): string[][] => {
+    const newBoard = initializeEmptyBoard();
+    const solve = (board: string[][]): boolean => {
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          if (board[row][col] === "") {
+            for (let num = 1; num <= 9; num++) {
+              board[row][col] = getRandomInt(1, 9).toString();
+              if (conflictCheck(board).length === 0) {
+                if (solve(board)) {
+                  return true;
+                }
               }
-            />
-          ))}
-        </div>
-      ))}
-    </div>
+              board[row][col] = "";
+            }
+            return false;
+          }
+        }
+      }
+      return true;
+    };
+    solve(newBoard);
+    return newBoard;
+  };
+
+  // Function to create a new puzzle by emptying cells of a solved board
+  const generatePuzzle = (holes: number): string[][] => {
+    const solvedBoard = fillBoard();
+    const puzzle = solvedBoard.map((row) => row.slice()); // Copy the solved board
+    let removedCells = 0;
+
+    // Randomly remove cells
+    while (removedCells < holes) {
+      const row = Math.floor(Math.random() * 9);
+      const col = Math.floor(Math.random() * 9);
+
+      // Only remove cells that are not already empty
+      if (puzzle[row][col] !== "") {
+        puzzle[row][col] = ""; // Empty the cell
+        removedCells++;
+      }
+    }
+    setBoard(puzzle);
+    return board;
+  };
+  return (
+    <Fragment>
+      <div className="dropdown">
+        <button
+          id="newGameBtn"
+          type="button"
+          className="btn btn-outline-dark btn-sm dropdown-toggle"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          New Game
+        </button>
+        <ul className="dropdown-menu">
+          <li>
+            <a
+              className="dropdown-item"
+              onClick={() => {
+                generatePuzzle(getRandomInt(30, 35));
+              }}
+            >
+              Easy
+            </a>
+          </li>
+          <li>
+            <a
+              className="dropdown-item"
+              onClick={() => {
+                generatePuzzle(getRandomInt(36, 49));
+              }}
+            >
+              Medium
+            </a>
+          </li>
+          <li>
+            <a
+              className="dropdown-item"
+              onClick={() => {
+                // setBoard(initializeEmptyBoard);
+                generatePuzzle(getRandomInt(50, 54));
+              }}
+            >
+              Hard
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div className="sudoku-board">
+        {board.map((row, rowIndex) => (
+          <div key={rowIndex} className="sudoku-row">
+            {row.map((cell, colIndex) => (
+              <input
+                key={colIndex}
+                type="text"
+                className={`sudoku-cell ${
+                  conflictCells.some(
+                    (cell) => cell[0] === rowIndex && cell[1] === colIndex
+                  )
+                    ? "conflict"
+                    : ""
+                }`}
+                maxLength={1}
+                value={cell}
+                onChange={(num) =>
+                  handleInputChange(rowIndex, colIndex, num.target.value)
+                }
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+    </Fragment>
   );
 };
 
