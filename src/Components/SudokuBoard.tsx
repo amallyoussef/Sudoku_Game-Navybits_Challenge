@@ -19,35 +19,39 @@ const SudokuBoard = () => {
   //Handler Function for Input Change
   const handleInputChange = (row: number, col: number, value: string) => {
     if (/^[1-9]?$/.test(value)) {
-      const newBoard = [...board];
+      //const newBoard = [...board];
+      const newBoard = board.map((row) => row.slice());
       newBoard[row][col] = value;
       setBoard(newBoard);
       setConflictCells(conflictCheck(newBoard));
     }
   };
 
+  // Function to solve a puzzle
+  const solve = (board: string[][]): boolean => {
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (board[row][col] === "") {
+          for (let num = 1; num <= 9; num++) {
+            board[row][col] = getRandomInt(1, 9).toString();
+            if (conflictCheck(board).length === 0) {
+              if (solve(board)) {
+                setBoard(board);
+                return true;
+              }
+            }
+            board[row][col] = "";
+          }
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
   // Function to generate a solved Sudoku grid
   const fillBoard = (): string[][] => {
     const newBoard = initializeEmptyBoard();
-    const solve = (board: string[][]): boolean => {
-      for (let row = 0; row < 9; row++) {
-        for (let col = 0; col < 9; col++) {
-          if (board[row][col] === "") {
-            for (let num = 1; num <= 9; num++) {
-              board[row][col] = getRandomInt(1, 9).toString();
-              if (conflictCheck(board).length === 0) {
-                if (solve(board)) {
-                  return true;
-                }
-              }
-              board[row][col] = "";
-            }
-            return false;
-          }
-        }
-      }
-      return true;
-    };
     solve(newBoard);
     return newBoard;
   };
@@ -74,49 +78,73 @@ const SudokuBoard = () => {
   };
   return (
     <Fragment>
-      <div className="dropdown">
-        <button
-          id="newGameBtn"
-          type="button"
-          className="btn btn-outline-dark btn-sm dropdown-toggle"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          New Game
-        </button>
-        <ul className="dropdown-menu">
-          <li>
-            <a
-              className="dropdown-item"
-              onClick={() => {
-                generatePuzzle(getRandomInt(30, 35));
-              }}
-            >
-              Easy
-            </a>
-          </li>
-          <li>
-            <a
-              className="dropdown-item"
-              onClick={() => {
-                generatePuzzle(getRandomInt(36, 49));
-              }}
-            >
-              Medium
-            </a>
-          </li>
-          <li>
-            <a
-              className="dropdown-item"
-              onClick={() => {
-                // setBoard(initializeEmptyBoard);
-                generatePuzzle(getRandomInt(50, 54));
-              }}
-            >
-              Hard
-            </a>
-          </li>
-        </ul>
+      <div style={{ display: "flex", gap: "10px" }}>
+        <div className="newGameDropDown">
+          <button
+            id="newGameBtn"
+            type="button"
+            className="btn btn-outline-dark btn-sm dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            New Game
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => {
+                  generatePuzzle(getRandomInt(30, 35));
+                }}
+              >
+                Easy
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => {
+                  generatePuzzle(getRandomInt(36, 49));
+                }}
+              >
+                Medium
+              </a>
+            </li>
+            <li>
+              <a
+                className="dropdown-item"
+                onClick={() => {
+                  // setBoard(initializeEmptyBoard);
+                  generatePuzzle(getRandomInt(50, 54));
+                }}
+              >
+                Hard
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div className="solver">
+          <button
+            className="btn btn-outline-dark btn-sm"
+            onClick={() => {
+              const newBoard = board.map((row) => row.slice());
+              solve(newBoard);
+            }}
+          >
+            Solve
+          </button>
+        </div>
+        <div className="inputBoard">
+          <button
+            className="btn btn-outline-dark btn-sm"
+            onClick={() => {
+              const newBoard = initializeEmptyBoard();
+              setBoard(newBoard);
+            }}
+          >
+            Input Your Sudoku To solve
+          </button>
+        </div>
       </div>
       <div className="sudoku-board">
         {board.map((row, rowIndex) => (
