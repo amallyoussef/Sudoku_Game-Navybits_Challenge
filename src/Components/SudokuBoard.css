@@ -4,7 +4,7 @@
     gap: 0;
     max-height:500px;
     max-width:500px;
-    margin: 50px auto;
+    margin: 40px auto;
     border: 2px solid #000;
 }
 
@@ -50,6 +50,12 @@
 .conflict {
     background-color: #ffcccc;
     color: red;
-    
-    
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    justify-content:center;
+    align-items: stretch;
 }

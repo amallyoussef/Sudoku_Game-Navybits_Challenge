@@ -105,7 +105,7 @@ const SudokuBoard = () => {
 
   return (
     <Fragment>
-      <div style={{ display: "flex", gap: "10px" }}>
+      <div className="button-container">
         <div className="newGameDropDown">
           <button
             id="newGameBtn"
