@@ -11,15 +11,23 @@ const SudokuBoard = () => {
   const initializeEmptyBoard = () =>
     Array.from({ length: 9 }, () => Array(9).fill(""));
 
+  const initializeEditableBoard = () =>
+    Array.from({ length: 9 }, () => Array(9).fill(true));
+
   // State to hold the board
   const [board, setBoard] = useState<string[][]>(initializeEmptyBoard());
 
   // State to hold conflicts
   const [conflictCells, setConflictCells] = useState<[number, number][]>([]);
 
+  // State to track editable cells
+  const [isEditable, setIsEditable] = useState<boolean[][]>(
+    initializeEditableBoard()
+  );
+
   //Handler Function for Input Change
   const handleInputChange = (row: number, col: number, value: string) => {
-    if (/^[1-9]?$/.test(value)) {
+    if (isEditable[row][col] && /^[1-9]?$/.test(value)) {
       const newBoard = board.map((row) => row.slice());
       newBoard[row][col] = value;
       setBoard(newBoard);
@@ -62,6 +70,7 @@ const SudokuBoard = () => {
     const solvedBoard = fillBoard();
     const puzzle = solvedBoard.map((row) => row.slice()); // Copy the solved board
     let removedCells = 0;
+    const editable = initializeEditableBoard();
 
     // Randomly remove cells
     while (removedCells < holes) {
@@ -71,10 +80,21 @@ const SudokuBoard = () => {
       // Only remove cells that are not already empty
       if (puzzle[row][col] !== "") {
         puzzle[row][col] = ""; // Empty the cell
+        editable[row][col] = true;
         removedCells++;
       }
     }
+
+    // Mark generated cells as non-editable
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (puzzle[row][col] !== "") {
+          editable[row][col] = false; // Non-editable for generated numbers
+        }
+      }
+    }
     setBoard(puzzle);
+    setIsEditable(editable);
     return board;
   };
 
@@ -168,6 +188,8 @@ const SudokuBoard = () => {
             className="btn btn-outline-dark btn-sm"
             onClick={() => {
               const newBoard = initializeEmptyBoard();
+              const editable = initializeEditableBoard();
+              setIsEditable(editable);
               setBoard(newBoard);
             }}
           >
@@ -198,7 +220,7 @@ const SudokuBoard = () => {
                   )
                     ? "conflict"
                     : ""
-                }`}
+                }${!isEditable[rowIndex][colIndex] ? "generated-cell" : ""}`}
                 maxLength={1}
                 value={cell}
                 onChange={(num) =>

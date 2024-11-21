@@ -23,14 +23,15 @@
     height: 55px;
     text-align: center;
     border: 1px solid #ccc;
-    font-size: 35px;
+    font-size: 40px;
     font-family: 'Courier New', Courier, monospace;
     box-sizing: border-box;
+    color:#0060c6;
     
 }
 
 .sudoku-cell:focus {
-    border-color: #007bff;
+    border-color: #0060c6;
 }
 
 .sudoku-board > .sudoku-row:nth-child(3n) .sudoku-cell{
@@ -58,4 +59,11 @@
     gap: 5px;
     justify-content:center;
     align-items: stretch;
+}
+
+.generated-cell {
+    background-color: rgb(228, 242, 253);
+    pointer-events: none;
+    color:#000
+    
 }
