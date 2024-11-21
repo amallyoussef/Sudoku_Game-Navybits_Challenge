@@ -19,7 +19,6 @@ const SudokuBoard = () => {
   //Handler Function for Input Change
   const handleInputChange = (row: number, col: number, value: string) => {
     if (/^[1-9]?$/.test(value)) {
-      //const newBoard = [...board];
       const newBoard = board.map((row) => row.slice());
       newBoard[row][col] = value;
       setBoard(newBoard);
@@ -76,6 +75,24 @@ const SudokuBoard = () => {
     setBoard(puzzle);
     return board;
   };
+
+  // Function to provide a hint
+  const provideHint = (board: string[][]) => {
+    const solvedBoard = board.map((row) => row.slice());
+    const currentBoard = board.map((row) => row.slice());
+    if (solve(solvedBoard)) {
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          if (currentBoard[row][col] === "") {
+            currentBoard[row][col] = solvedBoard[row][col]; // Fill one correct cell
+            setBoard(currentBoard); // Update the state
+            return;
+          }
+        }
+      }
+    }
+  };
+
   return (
     <Fragment>
       <div style={{ display: "flex", gap: "10px" }}>
@@ -143,6 +160,16 @@ const SudokuBoard = () => {
             }}
           >
             Input Your Sudoku To solve
+          </button>
+        </div>
+        <div className="hintBtn">
+          <button
+            className="btn btn-outline-dark btn-sm"
+            onClick={() => {
+              provideHint(board);
+            }}
+          >
+            Hint
           </button>
         </div>
       </div>
