@@ -81,15 +81,25 @@ const SudokuBoard = () => {
     const solvedBoard = board.map((row) => row.slice());
     const currentBoard = board.map((row) => row.slice());
     if (solve(solvedBoard)) {
+      const emptyCells: [number, number][] = [];
       for (let row = 0; row < 9; row++) {
         for (let col = 0; col < 9; col++) {
           if (currentBoard[row][col] === "") {
-            currentBoard[row][col] = solvedBoard[row][col]; // Fill one correct cell
-            setBoard(currentBoard); // Update the state
-            return;
+            emptyCells.push([row, col]);
           }
         }
       }
+      if (emptyCells.length === 0) {
+        console.log("No empty cells to fill. Puzzle is already complete.");
+        return;
+      }
+      const [row, col] = emptyCells[getRandomInt(0, emptyCells.length - 1)];
+      currentBoard[row][col] = solvedBoard[row][col];
+      setBoard(currentBoard);
+      console.log("Hint provided at row ", row, ",col ", col);
+      return;
+    } else {
+      console.log("Failed to solve the board for hint generation");
     }
   };
 
