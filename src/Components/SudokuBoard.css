@@ -65,5 +65,9 @@
     background-color: rgb(228, 242, 253);
     pointer-events: none;
     color:#000
-    
+
+}
+
+.sudoku-cell.generated-cell.conflict {
+    color: red;
 }

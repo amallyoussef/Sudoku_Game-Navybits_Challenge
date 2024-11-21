@@ -220,7 +220,7 @@ const SudokuBoard = () => {
                   )
                     ? "conflict"
                     : ""
-                }${!isEditable[rowIndex][colIndex] ? "generated-cell" : ""}`}
+                }${!isEditable[rowIndex][colIndex] ? " generated-cell" : ""}`}
                 maxLength={1}
                 value={cell}
                 onChange={(num) =>
