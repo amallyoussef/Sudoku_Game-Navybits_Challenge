@@ -4,6 +4,7 @@ import conflictCheck from "../Functions/SudokuValidation";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js"; // This is required for dropdown functionality
 import getRandomInt from "../Functions/GenRandom";
+import shuffleArray from "../Functions/ShuffleArray";
 
 const SudokuBoard = () => {
   // Function to initialize an empty 9x9 grid
@@ -28,11 +29,12 @@ const SudokuBoard = () => {
 
   // Function to solve a puzzle
   const solve = (board: string[][]): boolean => {
+    const candidates = shuffleArray(Array.from({ length: 9 }, (_, i) => i + 1));
     for (let row = 0; row < 9; row++) {
       for (let col = 0; col < 9; col++) {
         if (board[row][col] === "") {
-          for (let num = 1; num <= 9; num++) {
-            board[row][col] = getRandomInt(1, 9).toString();
+          for (let num of candidates) {
+            board[row][col] = num.toString();
             if (conflictCheck(board).length === 0) {
               if (solve(board)) {
                 setBoard(board);
