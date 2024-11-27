@@ -1,16 +1,19 @@
-import { Fragment, useState } from "react";
-import "./SudokuBoard.css";
+import { useState } from "react";
+import SudokuGrid from "./SudokuGrid";
+import SudokuControls from "./SudokuControls";
 import conflictCheck from "../Functions/SudokuValidation";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js"; // This is required for dropdown functionality
 import getRandomInt from "../Functions/GenRandom";
 import shuffleArray from "../Functions/ShuffleArray";
+import "./SudokuBoard.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js"; // This is required for dropdown functionality
 
 const SudokuBoard = () => {
   // Function to initialize an empty 9x9 grid
   const initializeEmptyBoard = () =>
     Array.from({ length: 9 }, () => Array(9).fill(""));
 
+  //Function to set all cells as editable
   const initializeEditableBoard = () =>
     Array.from({ length: 9 }, () => Array(9).fill(true));
 
@@ -71,12 +74,10 @@ const SudokuBoard = () => {
     const puzzle = solvedBoard.map((row) => row.slice()); // Copy the solved board
     let removedCells = 0;
     const editable = initializeEditableBoard();
-
     // Randomly remove cells
     while (removedCells < holes) {
       const row = Math.floor(Math.random() * 9);
       const col = Math.floor(Math.random() * 9);
-
       // Only remove cells that are not already empty
       if (puzzle[row][col] !== "") {
         puzzle[row][col] = ""; // Empty the cell
@@ -84,7 +85,6 @@ const SudokuBoard = () => {
         removedCells++;
       }
     }
-
     // Mark generated cells as non-editable
     for (let row = 0; row < 9; row++) {
       for (let col = 0; col < 9; col++) {
@@ -112,7 +112,7 @@ const SudokuBoard = () => {
         }
       }
       if (emptyCells.length === 0) {
-        console.log("No empty cells to fill. Puzzle is already complete.");
+        alert("No empty cells to fill. Puzzle is already complete.");
         return;
       }
       const [row, col] = emptyCells[getRandomInt(0, emptyCells.length - 1)];
@@ -121,117 +121,37 @@ const SudokuBoard = () => {
       console.log("Hint provided at row ", row, ",col ", col);
       return;
     } else {
-      console.log("Failed to solve the board for hint generation");
+      alert("Failed to solve the board for hint generation");
     }
+  };
+  const handleNewGame = (difficulty: string) => {
+    const holes =
+      difficulty === "easy"
+        ? getRandomInt(30, 35)
+        : difficulty === "medium"
+        ? getRandomInt(36, 49)
+        : getRandomInt(50, 54);
+    generatePuzzle(holes);
   };
 
   return (
-    <Fragment>
-      <div className="button-container">
-        <div className="newGameDropDown">
-          <button
-            id="newGameBtn"
-            type="button"
-            className="btn btn-outline-dark btn-sm dropdown-toggle"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            New Game
-          </button>
-          <ul className="dropdown-menu">
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => {
-                  generatePuzzle(getRandomInt(30, 35));
-                }}
-              >
-                Easy
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => {
-                  generatePuzzle(getRandomInt(36, 49));
-                }}
-              >
-                Medium
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                onClick={() => {
-                  // setBoard(initializeEmptyBoard);
-                  generatePuzzle(getRandomInt(50, 54));
-                }}
-              >
-                Hard
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div className="solver">
-          <button
-            className="btn btn-outline-dark btn-sm"
-            onClick={() => {
-              const newBoard = board.map((row) => row.slice());
-              solve(newBoard);
-            }}
-          >
-            Solve
-          </button>
-        </div>
-        <div className="inputBoard">
-          <button
-            className="btn btn-outline-dark btn-sm"
-            onClick={() => {
-              const newBoard = initializeEmptyBoard();
-              const editable = initializeEditableBoard();
-              setIsEditable(editable);
-              setBoard(newBoard);
-            }}
-          >
-            Input Your Sudoku To solve
-          </button>
-        </div>
-        <div className="hintBtn">
-          <button
-            className="btn btn-outline-dark btn-sm"
-            onClick={() => {
-              provideHint(board);
-            }}
-          >
-            Hint
-          </button>
-        </div>
-      </div>
-      <div className="sudoku-board">
-        {board.map((row, rowIndex) => (
-          <div key={rowIndex} className="sudoku-row">
-            {row.map((cell, colIndex) => (
-              <input
-                key={colIndex}
-                type="text"
-                className={`sudoku-cell ${
-                  conflictCells.some(
-                    (cell) => cell[0] === rowIndex && cell[1] === colIndex
-                  )
-                    ? "conflict"
-                    : ""
-                }${!isEditable[rowIndex][colIndex] ? " generated-cell" : ""}`}
-                maxLength={1}
-                value={cell}
-                onChange={(num) =>
-                  handleInputChange(rowIndex, colIndex, num.target.value)
-                }
-              />
-            ))}
-          </div>
-        ))}
-      </div>
-    </Fragment>
+    <>
+      <SudokuControls
+        onNewGame={handleNewGame}
+        onSolve={() => solve([...board])}
+        onInputPuzzle={() => {
+          setIsEditable(initializeEditableBoard);
+          setBoard(initializeEmptyBoard());
+        }}
+        onHint={() => provideHint(board)}
+      />
+      <SudokuGrid
+        board={board}
+        isEditable={isEditable}
+        conflictCells={conflictCells}
+        handleInputChange={handleInputChange}
+      />
+    </>
   );
 };
 
