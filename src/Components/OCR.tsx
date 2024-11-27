@@ -2,13 +2,11 @@ import processImage from "../Functions/ProcessImage";
 
 const OCR = () => {
   const testOCR = async (testImage: string) => {
-    // const testImage = "src/Components/image.png"; // Ensure this file is in your `public` folder
-
     try {
       console.log("Starting OCR for image:", testImage); // Debug log
       const result = await processImage(testImage); // Call the OCR function
-      console.log("OCR Result:", result); // Log the result
-      alert("OCR Result:\n" + result); // Display result in an alert
+      const array = result.split(" "); // Log the result
+      console.log(array);
     } catch (error) {
       console.error("Error during OCR testing:", error); // Debug log
       alert("Failed to process the image.");

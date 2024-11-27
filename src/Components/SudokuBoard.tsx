@@ -19,17 +19,11 @@ const SudokuBoard = () => {
   const initializeEditableBoard = () =>
     Array.from({ length: 9 }, () => Array(9).fill(true));
 
-  // State to hold the board
   const [board, setBoard] = useState<string[][]>(initializeEmptyBoard());
-
-  // State to hold conflicts
   const [conflictCells, setConflictCells] = useState<[number, number][]>([]);
-
-  // State to track editable cells
   const [isEditable, setIsEditable] = useState<boolean[][]>(
     initializeEditableBoard()
   );
-  // Alert State
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
   //Handler Function for Input Change
@@ -101,6 +95,15 @@ const SudokuBoard = () => {
     setIsEditable(editable);
     return board;
   };
+  const handleNewGame = (difficulty: string) => {
+    const holes =
+      difficulty === "easy"
+        ? getRandomInt(30, 35)
+        : difficulty === "medium"
+        ? getRandomInt(36, 49)
+        : getRandomInt(50, 54);
+    generatePuzzle(holes);
+  };
 
   // Function to provide a hint
   const provideHint = (board: string[][]) => {
@@ -128,15 +131,6 @@ const SudokuBoard = () => {
       setAlertMessage("Failed to solve the board for hint generation");
       return;
     }
-  };
-  const handleNewGame = (difficulty: string) => {
-    const holes =
-      difficulty === "easy"
-        ? getRandomInt(30, 35)
-        : difficulty === "medium"
-        ? getRandomInt(36, 49)
-        : getRandomInt(50, 54);
-    generatePuzzle(holes);
   };
 
   return (
