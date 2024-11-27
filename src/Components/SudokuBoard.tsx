@@ -1,10 +1,12 @@
 import { useState } from "react";
 import SudokuGrid from "./SudokuGrid";
 import SudokuControls from "./SudokuControls";
+import CustomAlert from "./CustomAlert";
 import conflictCheck from "../Functions/SudokuValidation";
 import getRandomInt from "../Functions/GenRandom";
 import shuffleArray from "../Functions/ShuffleArray";
 import "./SudokuBoard.css";
+import "./CustomAlert.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js"; // This is required for dropdown functionality
 
@@ -27,6 +29,8 @@ const SudokuBoard = () => {
   const [isEditable, setIsEditable] = useState<boolean[][]>(
     initializeEditableBoard()
   );
+  // Alert State
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
   //Handler Function for Input Change
   const handleInputChange = (row: number, col: number, value: string) => {
@@ -112,7 +116,7 @@ const SudokuBoard = () => {
         }
       }
       if (emptyCells.length === 0) {
-        alert("No empty cells to fill. Puzzle is already complete.");
+        setAlertMessage("No empty cells to fill. Puzzle is already complete.");
         return;
       }
       const [row, col] = emptyCells[getRandomInt(0, emptyCells.length - 1)];
@@ -121,7 +125,8 @@ const SudokuBoard = () => {
       console.log("Hint provided at row ", row, ",col ", col);
       return;
     } else {
-      alert("Failed to solve the board for hint generation");
+      setAlertMessage("Failed to solve the board for hint generation");
+      return;
     }
   };
   const handleNewGame = (difficulty: string) => {
@@ -151,6 +156,12 @@ const SudokuBoard = () => {
         conflictCells={conflictCells}
         handleInputChange={handleInputChange}
       />
+      {alertMessage && (
+        <CustomAlert
+          message={alertMessage}
+          onClose={() => setAlertMessage(null)}
+        />
+      )}
     </>
   );
 };
